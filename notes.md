@@ -35,7 +35,7 @@ uv run python ingest_data.py \
 
 After dockerizing the ingestion script, run:
     docker run -it --rm\
-    --network=pg-network \
+    --network=pipeline_default \
     taxi_ingest:v001 \
     --pg-user=root \
     --pg-pass=root \

@@ -40,9 +40,11 @@ parse_dates = ["tpep_pickup_datetime", "tpep_dropoff_datetime"]
 @click.option("--month", default=1, type=int, help="Month of the data")
 @click.option("--chunksize", default=100000, type=int, help="Chunk size for ingestion")
 @click.option("--target-table", default="yellow_taxi_data", help="Target table name")
+
 def run(
     pg_user, pg_pass, pg_host, month, pg_db, pg_port, year, chunksize, target_table
 ):
+    zones_url = "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
     prefix = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/"
 
     url = f"{prefix}/yellow_tripdata_{year:04d}-{month:02d}.csv.gz"
@@ -57,6 +59,9 @@ def run(
         iterator=True,
         chunksize=chunksize,
     )
+    df_zones = pd.read_csv(zones_url)
+    df_zones.head()
+    df_zones.to_sql(name='zones', con=engine, if_exists='replace')
     first = True
     for df_chunk in tqdm(df_iter):
         if first:
